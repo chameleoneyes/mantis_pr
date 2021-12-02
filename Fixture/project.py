@@ -1,3 +1,5 @@
+import time
+
 from Model.project import Project
 from selenium.webdriver.support.ui import Select
 import random
@@ -63,3 +65,16 @@ class ProjectHelper:
                pr_cache.append(Project(name=name, status=status, view_state=view_state, description=description))
            i = i + 1
         return list(pr_cache)
+
+    def delete_project(self, project):
+        wd = self.app.wd
+        if project is not None:
+            wd.get("http://localhost/mantisbt-1.2.20/manage_proj_page.php")
+            name = str(project.name)
+            self.app.wd.implicitly_wait(3)
+            wd.find_element_by_link_text(name).click()
+            self.app.wd.implicitly_wait(5)
+            wd.find_element_by_xpath("//input[@value='Delete Project']").click()
+            self.app.wd.implicitly_wait(3)
+            wd.find_element_by_xpath("//input[@value='Delete Project']").click()
+            wd.get("http://localhost/mantisbt-1.2.20/manage_proj_page.php")

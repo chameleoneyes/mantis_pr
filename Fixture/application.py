@@ -25,12 +25,14 @@ class Application:
         if wd.current_url != self.url:
             wd.get(self.url)
 
+    '''
     def is_valid(self):
         try:
             self.wd.current_url
             return True
         except:
             return False
+    '''
 
     def clear_fixture(self):
         self.wd.quit()
