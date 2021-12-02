@@ -1,0 +1,24 @@
+{
+  "web":
+  {
+     "testUrl": "http://localhost/mantisbt-1.2.20"
+  },
+  "webadmin":
+  {
+     "username": "administrator",
+     "password": "root"
+  },
+  "ftp":
+  {
+    "host": "localhost",
+    "username": "root",
+    "password": ""
+  },
+  "james":
+  {
+    "host": "localhost",
+    "port": 4555,
+    "user": "root",
+    "password": "root"
+  }
+}

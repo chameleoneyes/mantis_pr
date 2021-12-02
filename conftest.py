@@ -4,7 +4,8 @@ from Fixture.application import Application
 #from Fixture.db import DBfixture
 import os.path
 import importlib
-
+import ftputil
+import jsonpickle
 
 
 fixture = None
@@ -21,13 +22,46 @@ def load_config(file):
 
 
 @pytest.fixture
-def app(request):
+def app(request, config):
     global fixture
     browser = request.config.getoption("--browser")
-    web_config = load_config(request.config.getoption("--target"))['web']
+    # web_config = load_config(request.config.getoption("--target"))['web']
     if fixture is None or not fixture.is_valid():
-        fixture = Application(browser=browser, url=web_config["testUrl"])
+        #fixture = Application(browser=browser, url=config['web']["testUrl"])
+        fixture = Application(browser=browser, config=config)
+    fixture.session.ensure_login(pwd=config["webadmin"]["password"], login=config["webadmin"]["username"])
     return fixture
+
+
+@pytest.fixture(scope='session')
+def config(request):
+    return load_config(request.config.getoption("--target"))
+
+'''
+@pytest.fixture(scope='session', autouse=True)
+def configure_server(request, config):
+    install_server_config(config['ftp']['host'], config['ftp']['username'], config['ftp']['password'])
+
+    def fin():
+        restore_server_config(config['ftp']['host'], config['ftp']['username'], config['ftp']['password'])
+    request.addfinalizer(fin)
+'''
+
+def install_server_config(host, username, password):
+    with ftputil.FTPHost(host, username, password) as remote:
+        if remote.path.isfile('config_inc_back.php'):
+            remote.remove('config_inc_back.php')
+        if remote.path.isfile('config_inc.php'):
+            remote.rename('config_inc.php', 'config_inc_back.php')
+        remote.upload(os.path.join(os.path.dirname(__file__), 'resources/config_inc.php'), 'config_inc.php')
+
+
+def restore_server_config(host, username, password):
+    with ftputil.FTPHost(host, username, password) as remote:
+        if remote.path.isfile('config_inc_back.php'):
+            if remote.path.isfile('config_inc.php'):
+                remote.remove('config_inc.php')
+            remote.rename('config_inc_back.php', 'config_inc.php')
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -36,16 +70,6 @@ def stop(request):
         fixture.clear_fixture()
     request.addfinalizer(f_exit)
     return fixture
-
-
-@pytest.fixture(scope='session')
-def db(request):
-    db_config = load_config(request.config.getoption("--target"))['db']
-    dbfixture = DBfixture(host=db_config['host'], name=db_config['name'], user=db_config['user'], pwd=db_config['password'])
-    def fin():
-        dbfixture.destroy()
-    request.addfinalizer(fin)
-    return dbfixture
 
 
 @pytest.fixture

@@ -19,6 +19,7 @@ class ProjectHelper:
             wd.find_element_by_name("name").click()
             wd.find_element_by_name("name").clear()
             wd.find_element_by_name("name").send_keys(project.name)
+            time.sleep(2)
             wd.find_element_by_name("status").click()
             wd.find_element_by_xpath("//option[@value='%s']" % project.status).click()
             wd.find_element_by_name("view_state").click()
@@ -78,3 +79,22 @@ class ProjectHelper:
             self.app.wd.implicitly_wait(3)
             wd.find_element_by_xpath("//input[@value='Delete Project']").click()
             wd.get("http://localhost/mantisbt-1.2.20/manage_proj_page.php")
+
+    def improve_project_object(self, project):
+        if project.status == '10':
+            project.status = 'development'
+        elif project.status == '30':
+            project.status = 'release'
+        elif project.status == '50':
+            project.status = 'stable'
+        elif project.status == '70':
+            project.status = 'obsolete'
+        else:
+            pass
+        if project.view_state == '10':
+            project.view_state = 'public'
+        elif project.view_state == '50':
+            project.view_state = 'private'
+        else:
+            pass
+        return project

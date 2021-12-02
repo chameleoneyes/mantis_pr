@@ -2,8 +2,6 @@ import random
 
 
 def test_delete_project(app):
-    app.session.login("administrator", "root")
-    assert app.session.is_logged_in_as("administrator")
     old_project_list = app.project.get_project_from_hp()
     if len(old_project_list) == 0:
         project = app.project.generate_project_data()
