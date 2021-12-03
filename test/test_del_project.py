@@ -8,7 +8,7 @@ def test_delete_project(app):
         app.project.create_project(project)
     project = random.choice(old_project_list)
     app.project.delete_project(project)
-    new_project_list = app.project.get_project_from_hp()
+    new_project_list = app.soap.list_of_projects()
     assert len(old_project_list) - 1 == len(new_project_list)
     old_project_list.remove(project)
     assert sorted(old_project_list, key=lambda x: x.name) == sorted(new_project_list, key=lambda x: x.name)
