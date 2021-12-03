@@ -2,7 +2,7 @@ import random
 
 
 def test_delete_project(app):
-    old_project_list = app.project.get_project_from_hp()
+    old_project_list = app.soap.list_of_projects()
     if len(old_project_list) == 0:
         project = app.project.generate_project_data()
         app.project.create_project(project)
